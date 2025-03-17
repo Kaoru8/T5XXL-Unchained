@@ -72,8 +72,8 @@ Code wants to be free, models want to be free, and you owe me nothing.
 
 That said, if you end up finding value in this project and have some spare cash lying around, I would greatly appreciate a donation. Every little bit helps, and will go a long way toward my "get a less crappy GPU" savings fund - doing proof-of-concept training runs for this project on a 12GB VRAM GPU at 8-9 s/it was downright painful.
 
-Bitcoin: bc1q2n9x666c2uke6gj72rrrcvfe0jw9q0wmrqpfa5
-Ethereum: 0x0aa10Ee10C8717a2fb98b8eDB3C6Dde2C21512b0
-Credit/Debit card or Cash App: [Buy Me A Coffee](https://buymeacoffee.com/kaoru8)
+- Bitcoin: bc1q2n9x666c2uke6gj72rrrcvfe0jw9q0wmrqpfa5
+- Ethereum: 0x0aa10Ee10C8717a2fb98b8eDB3C6Dde2C21512b0
+- Credit/Debit card or Cash App: [Buy Me A Coffee](https://buymeacoffee.com/kaoru8)
 
 Go forth, create, and enjoy yourselves. Just remember the words of Ben Parker - with great power comes great responsibility. Use the models, but please don't abuse them. I leave the distinction and the decision of where to draw that particular line up to your own judgement.
