@@ -62,7 +62,7 @@ I think that this was the best possible compromise that simultaneously uncensors
 If you want to directly test the differences and improvements to tokenization with your own prompts, and intuitively understand why this works to both effectively uncensor the model as well as improve performance, you can do so as follows:
 
 1. Download the vanilla T5-base model and tokenizer from [here](https://huggingface.co/google-t5/t5-base/tree/main). You only need the `config.json`, `generation_config.json`, `model.safetensors` and `tokenizer.json` files.
-2. Put all of the files in a single folder, make a copy of the folder, then replace the `tokenizer.json` file in the copied folder with the one from this respository.
+2. Put all of the files in a single folder, make a copy of the folder, then replace the `tokenizer.json` file in the copied folder with the one from this repository.
 3. Open the `testTokenizer.py` file from this repository in a text editor, set the folder paths to the ones you just created, edit the prompt list to include whatever you want to test, then run the file in a terminal.
 
 Testing very verbose prompts with lots of NSFW terms in them will be particularly illuminating.
