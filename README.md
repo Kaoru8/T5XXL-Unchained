@@ -2,7 +2,7 @@
 
 This project enables the training of Flux1-dev (and any other models that use T5-XXL for prompt tokenization) on NSFW content and offers other improvements to tokenization by extending the T5 model's tokenizer with new vocabulary, and adjusting its embedding size accordingly.
 
-If you want to get straight into it, pre-patched models are now available for [download on HuggingFace](https://huggingface.co/Kaoru8/T5XXL-Unchained). You can download one of those and skip to step 4.
+If you want to get straight into it, pre-patched models are now available for [download on HuggingFace](https://huggingface.co/Kaoru8/T5XXL-Unchained). You can download one of those and the `tokenizer.json` file and skip to step 4.
 
 If you already have the original `t5xxl_fp16.safetensors` model downloaded and want to save on bandwidth, here are the steps to patch it yourself:
 ### 1. Download and extract this repository
@@ -24,22 +24,38 @@ After you have that, you can convert it to use the new token embedding size by o
 > [!CAUTION]
 > This is a quick and dirty patch that will make ComfyUI work with the new T5 model and tokenizer, but will also break support for the vanilla ones. It is a temporary measure that lets you get the new things working immediately, while giving the developers time to implement proper support for the new tokenizer in a manner that works best for them.
 
-Make a backup copy of `ComfyUI/comfy/text_encoders/t5_config_xxl.json`, then copy over the `t5_config_xxl.json` from this repository in its place.
+- Download and setup [ComfyUI](https://github.com/comfyanonymous/ComfyUI)
 
-Make a backup copy of `ComfyUI/comfy/text_encoders/t5_tokenizer/tokenizer.json`, then copy over the `tokenizer.json` from this repository in its place.
+- Make a backup copy of `ComfyUI/comfy/text_encoders/t5_config_xxl.json`, then copy over the `t5_config_xxl.json` from this repository in its place.
+
+- Make a backup copy of `ComfyUI/comfy/text_encoders/t5_tokenizer/tokenizer.json`, then copy over the `tokenizer.json` from this repository in its place.
+
+Your ComfyUI install should now be able to load the new T5 model and use the matching tokenizer with any CLIP loader node, and inference should work.
+
+**Keep in mind that the model released on HuggingFace (or the one you converted yourself) is "raw"** - meaning it was modified to work with the new tokenizer and embedding size, but it still hasn't actually been trained to do so. Without actually training the new T5 model and Flux on the new tokens, and if just using it out of the box as-is, expect the following:
+
+- No capability to generate any of the concepts behind newly added tokens (NSFW or otherwise)
+- Prompt adherence for pre-existing tokens from the vanilla tokenizer should be mostly unaffected, but a few words might have lower adherence
+- You will get small border artifacts on about 10-15% of generated images, more on these below
+
+All of these issues gradually resolve themselves with training, so let's get to that.
 ### 5. Patching Kohya's scripts to support training the new T5 model on the new tokenizer
 
 > [!CAUTION]
 > Same warning as above - patching things in this manner will break support for training the vanilla T5 model until more elegant official support for the new tokenizer can be implemented.
 
-Make backup copies of `library/strategy_flux.py` and `library/flux_utils.py`, then copy over the `strategy_flux.py` and `flux_utils.py` from this repository in their place.
+- Download the [sd3 branch of Kohya's Stable Diffusion scripts](https://github.com/kohya-ss/sd-scripts/tree/sd3)
 
-Copy over the `tokenizer.json` from this repository to the `tests` directory.
+- Make backup copies of `library/strategy_flux.py` and `library/flux_utils.py`, then copy over the `strategy_flux.py` and `flux_utils.py` from this repository in their place.
+
+- Copy over the `tokenizer.json` from this repository to the `tests` directory.
 ### 6. Train the model
 
 You can now point Kohya's scripts to the new T5 model path, and train in the same manner as usual. A couple of notes:
 
-- Make sure you're training both the UNet and T5, so use the `train_t5xxl=True` flag. Training just the UNet is of no use - both models need to be trained on the new tokens and embedding size in tandem to learn and adapt to them.
+- Make sure that the `t5xxl` parameter is pointing to one of the new `T5XXL-Unchained` model variants instead of the vanilla ones
+
+- Make sure that you're training both the UNet and T5, so use the `train_t5xxl=True` flag. Training just the UNet is of no use - both models need to be trained on the new tokens and embedding size in tandem to learn and adapt to them.
 
 - The larger tokenizer and corresponding larger embeddings result in a slightly larger model size compared to vanilla T5. So if you're training on a low VRAM GPU and were using the `blocks_to_swap` argument to make training work for you before, and training is significantly slower now, you may need to increase the value by 1 to get the same training speeds as before.
 
@@ -62,7 +78,7 @@ I think that this was the best possible compromise that simultaneously uncensors
 If you want to directly test the differences and improvements to tokenization with your own prompts, and intuitively understand why this works to both effectively uncensor the model as well as improve performance, you can do so as follows:
 
 1. Download the vanilla T5-base model and tokenizer from [here](https://huggingface.co/google-t5/t5-base/tree/main). You only need the `config.json`, `generation_config.json`, `model.safetensors` and `tokenizer.json` files.
-2. Put all of the files in a single folder, make a copy of the folder, then replace the `tokenizer.json` file in the copied folder with the one from this respository.
+2. Put all of the files in a single folder, make a copy of the folder, then replace the `tokenizer.json` file in the copied folder with the one from this repository.
 3. Open the `testTokenizer.py` file from this repository in a text editor, set the folder paths to the ones you just created, edit the prompt list to include whatever you want to test, then run the file in a terminal.
 
 Testing very verbose prompts with lots of NSFW terms in them will be particularly illuminating.
